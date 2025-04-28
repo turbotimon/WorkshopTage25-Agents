@@ -1,0 +1,10 @@
+[project]
+name = "AIA25"
+version = "0.1.0"
+description = "Repository for the Open Source AI Workshop - AI Agents in Action: Building Smart, Open-Source LLM Workflows - May 9, 2025"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openai-agents[litellm]>=0.0.13",
+    "python-dotenv>=1.1.0",
+]
