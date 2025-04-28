@@ -20,3 +20,11 @@ After you installed uv, you can  use the following command to install the requir
 ```bash
 uv sync
 ```
+
+# Repository structure
+
+The repository is divided into three subdirectories: 
+
+1. The directory `ui` includes a streamlit interface that you can use to interact with your agents. You might need to change what gets called in the interface based on the exercise that you are working on.
+2. Under `agents` you will implement the code for your own agents. These agents will be called by the streamlit code.
+3. The `exercises` directory includes the exercise instructions in the form of Markdown files.
