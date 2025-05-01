@@ -1,11 +1,18 @@
 [project]
-name = "AIA25"
+name = "aia25"
 version = "0.1.0"
 description = "Repository for the Open Source AI Workshop - AI Agents in Action: Building Smart, Open-Source LLM Workflows - May 9, 2025"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "chainlit>=2.5.5",
+    "nest-asyncio>=1.6.0",
     "openai-agents[litellm]>=0.0.13",
+    "pydantic-ai[logfire]>=0.1.8",
     "python-dotenv>=1.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "ptpython>=3.0.30",
 ]

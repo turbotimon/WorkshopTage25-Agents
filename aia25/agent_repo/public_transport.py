@@ -1,16 +1,15 @@
+from aia25.bootstrap import *  # noqa: F403,E402
+
 import os
-from pathlib import Path
 from agents import Agent
 from agents.extensions.models.litellm_model import LitellmModel
-from tools_repo.public_transport import get_connections
-from tools_repo.time import get_current_date_and_time
 
-from dotenv import load_dotenv
+from aia25.tools_repo.public_transport import get_connections
+from aia25.tools_repo.time import get_current_date_and_time
 
 
 class PublicTransportAgent(Agent):
     def __init__(self):
-        load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
         assert "AGENT_MODEL" in os.environ, "AGENT_MODEL environment variable is not set"
         assert "OPENROUTER_API_KEY" in os.environ, "OPENROUTER_API_KEY environment variable is not set"
         super().__init__(
