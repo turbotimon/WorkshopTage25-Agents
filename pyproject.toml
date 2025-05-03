@@ -6,10 +6,13 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "chainlit>=2.5.5",
+    "ics>=0.7.2",
     "nest-asyncio>=1.6.0",
     "openai-agents[litellm]>=0.0.13",
     "pydantic-ai[logfire]>=0.1.8",
+    "python-dateutil>=2.9.0.post0",
     "python-dotenv>=1.1.0",
+    "pytz>=2025.2",
 ]
 
 [dependency-groups]

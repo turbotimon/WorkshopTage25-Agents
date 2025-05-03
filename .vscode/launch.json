@@ -1,0 +1,32 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python Debugger: Current File with Arguments",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "args": "${command:pickArgs}"
+    },
+    {
+      "name": "Chat UI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "chainlit",
+      "args": ["run", "${workspaceFolder}/aia25/ui/app.py", "-w"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+
+      // follow the re-spawned process every time the watcher reloads your app
+      "subProcess": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}${pathSeparator}${workspaceFolder}/aia25${pathSeparator}${workspaceFolder}/tools_repo"
+      }
+    }
+  ]
+}

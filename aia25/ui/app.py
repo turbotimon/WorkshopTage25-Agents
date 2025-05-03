@@ -1,9 +1,9 @@
+from aia25.agent_repo.triage_agent import triage_agent
 from aia25.bootstrap import *  # noqa: F403,E402
 
 import chainlit as cl
 from agents import Agent, Runner, enable_verbose_stdout_logging
 
-from aia25.agent_repo.public_transport import PublicTransportAgent
 
 enable_verbose_stdout_logging()
 
@@ -27,7 +27,7 @@ def get_agent_response(user_message: str):
 @cl.on_chat_start
 def on_chat_start():
     # Reset the agent and history when the chat starts
-    cl.user_session.set("agent", PublicTransportAgent())
+    cl.user_session.set("agent", triage_agent)
     cl.user_session.set("history", [])
 
 
