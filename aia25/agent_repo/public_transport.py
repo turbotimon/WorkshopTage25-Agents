@@ -9,10 +9,16 @@ from aia25.tools_repo.time import get_current_date_and_time
 
 
 class PublicTransportAgent(Agent):
-    def __init__(self):
+    @classmethod
+    def setup(cls) -> Agent:
+        """
+        Set up the agent with the necessary tools and instructions.
+        This method is called when the agent is created.
+        """
         assert "AGENT_MODEL" in os.environ, "AGENT_MODEL environment variable is not set"
         assert "OPENROUTER_API_KEY" in os.environ, "OPENROUTER_API_KEY environment variable is not set"
-        super().__init__(
+
+        return cls(
             name="Public Transport Agent",
             instructions=(
                 "You are a specialist when it comes to planning trips using public transport. "

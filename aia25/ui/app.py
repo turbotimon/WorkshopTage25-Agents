@@ -4,16 +4,33 @@ from aia25.agent_repo.agent_service import execute_agent, get_default_agent
 from aia25.bootstrap import *  # noqa: F403,E402
 
 import chainlit as cl
-from agents import enable_verbose_stdout_logging
+from agents import Agent, Runner, enable_verbose_stdout_logging
+
+from aia25.agent_repo.triage_agent import triage_agent
+from aia25.tools_repo.mcp_servers import MCPServerRepository
 
 
 enable_verbose_stdout_logging()
 
 
-def get_agent_response(user_message: str):
-    agent = cl.user_session.get("agent")
-    history = cl.user_session.get("history") or []
-    global_context = cl.user_session.get("global_context") or GlobalContext()
+def get_agent_response(user_message: str) -> str:
+    """
+    Run the agent with the chat history and the given user message and update the history.
+    Returns only the final output.
+
+    Args:
+        user_message: The user's message.
+
+    Returns:
+        The agent's response.
+    """
+    agent: Agent = cl.user_session.get("agent")
+
+    # Retrieve the history from the user session and add the user message to it
+    history = cl.user_session.get("history") or [] + [{"role": "user", "content": user_message}]
+
+    # retrieve the global context from the user session
+    global_context: GlobalContext = cl.user_session.get("global_context") or GlobalContext()
 
     # Execute agent with input and handle exceptions in the service layer
     response, updated_history = execute_agent(
@@ -44,3 +61,9 @@ def on_chat_start():
 async def handle_message(message: cl.Message):
     response = get_agent_response(message.content)
     await cl.Message(content=response).send()
+
+
+@cl.server.app.on_event("shutdown")
+async def on_shutdown():
+    repo = await MCPServerRepository.get_instance()
+    await repo.aclose()
