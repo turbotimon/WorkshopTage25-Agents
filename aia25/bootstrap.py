@@ -3,7 +3,7 @@ import os, base64, nest_asyncio, logfire, dotenv
 from pathlib import Path
 
 # Load environment variables from .env file
-dotenv.load_dotenv(Path(__file__).parent.parent / ".env")
+dotenv.load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 
 # Configure tracing with Langfuse
 pub, sec = os.getenv("LANGFUSE_PUBLIC_KEY"), os.getenv("LANGFUSE_SECRET_KEY")
