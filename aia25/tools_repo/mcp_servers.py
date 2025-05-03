@@ -39,6 +39,26 @@ class MCPServerRepository:
                 },
                 client_session_timeout_seconds=15,
             ),
+            "weather": MCPServerStdio(
+                cache_tools_list=True,
+                params={
+                    "command": "npx",
+                    "args": ["@philschmid/weather-mcp"],
+                },
+                client_session_timeout_seconds=15,
+            ),
+            "openstreetmap": MCPServerStdio(
+                cache_tools_list=True,
+                params={
+                    "command": "uvx",
+                    "args": [
+                        "--from",
+                        "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
+                        "osm-mcp-server",
+                    ],
+                },
+                client_session_timeout_seconds=15,
+            ),
         }
 
         # Enter async context for each serverß

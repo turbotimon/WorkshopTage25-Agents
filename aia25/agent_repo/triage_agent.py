@@ -1,6 +1,4 @@
-import os
 from agents import Agent
-from agents.extensions.models.litellm_model import LitellmModel
 
 from aia25.agent_repo.public_transport import PublicTransportAgent
 from aia25.agent_repo.scheduling_agent import SchedulingAgent
@@ -16,7 +14,6 @@ triage_agent = Agent(
         "When referring to an appointment, always mention the name of the appointment. "
         "Answer in a friendly and helpful manner. "
     ),
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
     tools=[
         PublicTransportAgent().as_tool(
             tool_name="find_transport_routes",

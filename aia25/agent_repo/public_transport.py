@@ -1,8 +1,6 @@
 from aia25.bootstrap import *  # noqa: F403,E402
 
-import os
 from agents import Agent
-from agents.extensions.models.litellm_model import LitellmModel
 
 from aia25.tools_repo.public_transport import get_connections
 from aia25.tools_repo.time import get_current_date_and_time
@@ -15,9 +13,6 @@ class PublicTransportAgent(Agent):
         Set up the agent with the necessary tools and instructions.
         This method is called when the agent is created.
         """
-        assert "AGENT_MODEL" in os.environ, "AGENT_MODEL environment variable is not set"
-        assert "OPENROUTER_API_KEY" in os.environ, "OPENROUTER_API_KEY environment variable is not set"
-
         return cls(
             name="Public Transport Agent",
             instructions=(
@@ -31,6 +26,5 @@ class PublicTransportAgent(Agent):
                 "actions before calling a tool. If you don't have enough information to answer the "
                 "user's question, ask them for more details."
             ),
-            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
             tools=[get_current_date_and_time, get_connections],
         )

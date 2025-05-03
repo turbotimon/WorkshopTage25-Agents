@@ -4,7 +4,7 @@ from aia25.agent_repo.agent_service import execute_agent, get_default_agent
 from aia25.bootstrap import *  # noqa: F403,E402
 
 import chainlit as cl
-from agents import Agent, Runner, enable_verbose_stdout_logging
+from agents import Agent, RunConfig, Runner, enable_verbose_stdout_logging
 
 from aia25.agent_repo.triage_agent import triage_agent
 from aia25.tools_repo.mcp_servers import MCPServerRepository
