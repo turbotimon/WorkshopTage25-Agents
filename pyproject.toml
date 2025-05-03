@@ -20,3 +20,6 @@ dev = [
     "black>=25.1.0",
     "ptpython>=3.0.30",
 ]
+
+[project.scripts]
+app = "aia25.start_app:main"
