@@ -14,7 +14,8 @@ def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], ag
     return f"""
     You are a scheduling assistant that optimizes transport recommendations based on calendar appointments.
 
-    Current date: {ctx.current_time}
+    Current date: {ctx.current_date}
+    Current time: {ctx.current_time}
 
     # Tasks
     - Evaluate transport options against calendar appointments

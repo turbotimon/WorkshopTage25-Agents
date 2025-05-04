@@ -8,4 +8,5 @@ class GlobalContext(BaseModel):
     information that needs to be accessed by multiple agents.
     """
 
-    current_time: str = ""
+    current_date: str = ""  # Date in YYYY-MM-DD format
+    current_time: str = ""  # Time in HH:MM:SS format

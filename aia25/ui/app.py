@@ -31,10 +31,14 @@ def get_agent_response(user_message: str):
 
 @cl.on_chat_start
 def on_chat_start():
+    current_datetime = datetime.now()
+    date_only = current_datetime.strftime("%Y-%m-%d")
+    time_only = current_datetime.strftime("%H:%M:%S")
+
     # Reset the agent and history when the chat starts
     cl.user_session.set("agent", triage_agent)
     cl.user_session.set("history", [])
-    cl.user_session.set("global_context", GlobalContext(current_time=datetime.now().strftime("%Y-%m-%d")))
+    cl.user_session.set("global_context", GlobalContext(current_date=date_only, current_time=time_only))
 
 
 @cl.on_message  # this function will be called every time a user inputs a message in the UI
