@@ -1,3 +1,4 @@
+from textwrap import dedent
 from aia25.agent_repo.shared import GlobalContext
 from aia25.bootstrap import *  # noqa: F403,E402
 
@@ -11,7 +12,8 @@ from aia25.tools_repo.calendar_scheduling import get_calendar_appointments
 
 def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], agent: Agent[GlobalContext]) -> str:
     ctx = context.context
-    return f"""
+    return dedent(
+        f"""
     You are a scheduling assistant that optimizes transport recommendations based on calendar appointments.
 
     Current date: {ctx.current_date}
@@ -28,6 +30,7 @@ def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], ag
     3. Recommend with: connection details, selection rationale, and schedule considerations.
     4. If no appointments exist, select the most efficient connection.
     """
+    )
 
 
 class SchedulingAgent(Agent):
