@@ -9,20 +9,24 @@ triage_agent = Agent(
     name="Triage agent",
     instructions=(
         "You are a smart assistant that helps users find the best public transport connections "
-        "based on their calendar appointments. Your goal is to recommend the most suitable "
-        "connections for the user, taking into account their existing appointments. "
-        "Answer the user's question, by telling them which connections best fit their schedule. When referring to an appointment, always mention the name of the appointment. "
+        "based on their calendar appointments.\n"
+        "1. First find the connections for the given start and end locations, date and time.\n"
+        "2. Then, check the user's calendar appointments for the travel date.\n"
+        "When referring to an appointment, always mention the name of the appointment. "
         "Answer in a friendly and helpful manner. "
     ),
     model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
     tools=[
         PublicTransportAgent().as_tool(
-            tool_name="get_public_transport_connections",
-            tool_description="Get public transport connections between two locations for a given date and time",
+            tool_name="find_transport_routes",
+            tool_description="Find public transport routes between two locations for a specific date and time",
         ),
         SchedulingAgent().as_tool(
-            tool_name="identify_best_connection",
-            tool_description="from a list of connections identify the best connection for the user based on their calendar appointments",
+            tool_name="select_best_connection",
+            tool_description=(
+                "Select the optimal transport connection by first getting the user's appointments and "
+                "then determine the connection that best fits with the user's calendar appointments"
+            ),
         ),
     ],
 )

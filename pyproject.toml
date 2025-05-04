@@ -17,5 +17,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "black>=25.1.0",
     "ptpython>=3.0.30",
 ]
