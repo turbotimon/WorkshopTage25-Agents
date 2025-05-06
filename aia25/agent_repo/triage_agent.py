@@ -4,6 +4,7 @@ from agents.extensions.models.litellm_model import LitellmModel
 
 from aia25.agent_repo.public_transport import PublicTransportAgent
 from aia25.agent_repo.scheduling_agent import SchedulingAgent
+from aia25.agent_repo.topic_guardrail import topic_guardrail
 
 triage_agent = Agent(
     name="Triage agent",
@@ -29,4 +30,5 @@ triage_agent = Agent(
             ),
         ),
     ],
+    input_guardrails=[topic_guardrail],  # Add the guardrail here
 )

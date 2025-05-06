@@ -5,12 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python Debugger: Current File with Arguments",
+      "name": "Agent service (guardrail)",
       "type": "debugpy",
       "request": "launch",
-      "program": "${file}",
+      "module": "aia25.agent_repo.agent_service",
       "console": "integratedTerminal",
-      "args": "${command:pickArgs}"
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false
     },
     {
       "name": "Chat UI",
