@@ -31,7 +31,7 @@ guardrail_agent = Agent(
         IMPORTANT: Always respond with valid JSON format that can be parsed. Do not include any text before or after the JSON object.
         """
     ),
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    model=LitellmModel(model="ollama/llama3.1", api_key=os.getenv("OPENROUTER_API_KEY")),
     output_type=TopicCheckOutput,
 )
 

@@ -1,4 +1,5 @@
 from agents import Agent
+from agents.extensions.models.litellm_model import LitellmModel
 
 from aia25.tools_repo.mcp_servers import MCPServerRepository
 
@@ -15,4 +16,5 @@ class WebbrowserAgent(Agent):
                 "You should use the available web browser tools to accomplish the user's tasks."
             ),
             mcp_servers=[mcp_repo.get_server("playwright")],
+            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
         )

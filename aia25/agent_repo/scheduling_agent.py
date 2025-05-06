@@ -3,6 +3,7 @@ from aia25.bootstrap import *  # noqa: F403,E402
 from textwrap import dedent
 
 from agents import Agent, RunContextWrapper
+from agents.extensions.models.litellm_model import LitellmModel
 
 from aia25.agent_repo.shared import GlobalContext
 from aia25.tools_repo.calendar_scheduling import get_calendar_appointments
@@ -37,4 +38,5 @@ class SchedulingAgent(Agent):
             name="Scheduling Agent",
             instructions=scheduling_agent_system_prompt,
             tools=[get_calendar_appointments],
+            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
         )

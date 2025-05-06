@@ -1,19 +1,25 @@
+from openai import AsyncOpenAI
+from aia25.bootstrap import *  # noqa: F403,E402
+
 from datetime import datetime
 from aia25.agent_repo.shared import GlobalContext
 from aia25.agent_repo.agent_service import execute_agent, get_default_agent
 from aia25.bootstrap import *  # noqa: F403,E402
 
 import chainlit as cl
-from agents import Agent, RunConfig, Runner, enable_verbose_stdout_logging
+from agents import (
+    Agent,
+    Runner,
+    enable_verbose_stdout_logging,
+)
 
-from aia25.agent_repo.triage_agent import triage_agent
 from aia25.tools_repo.mcp_servers import MCPServerRepository
 
 
-enable_verbose_stdout_logging()
+# enable_verbose_stdout_logging()
 
 
-def get_agent_response(user_message: str) -> str:
+async def get_agent_response(user_message: str) -> str:
     """
     Run the agent with the chat history and the given user message and update the history.
     Returns only the final output.
@@ -27,7 +33,7 @@ def get_agent_response(user_message: str) -> str:
     agent: Agent = cl.user_session.get("agent")
 
     # Retrieve the history from the user session and add the user message to it
-    history = cl.user_session.get("history") or [] + [{"role": "user", "content": user_message}]
+    history = (cl.user_session.get("history") or []) + [{"role": "user", "content": user_message}]
 
     # retrieve the global context from the user session
     global_context: GlobalContext = cl.user_session.get("global_context") or GlobalContext()
@@ -59,7 +65,7 @@ def on_chat_start():
 
 @cl.on_message  # this function will be called every time a user inputs a message in the UI
 async def handle_message(message: cl.Message):
-    response = get_agent_response(message.content)
+    response = await get_agent_response(message.content)
     await cl.Message(content=response).send()
 
 

@@ -1,5 +1,9 @@
 from aia25.bootstrap import *  # noqa: F403,E402
 
+from textwrap import dedent
+
+from agents import Agent, RunContextWrapper
+from agents.extensions.models.litellm_model import LitellmModel
 from agents import Agent
 
 from aia25.tools_repo.public_transport import get_connections
@@ -7,6 +11,8 @@ from aia25.tools_repo.time import get_current_date_and_time
 
 
 class PublicTransportAgent(Agent):
+    def __init__(self):
+        super().__init__(
     @classmethod
     def setup(cls) -> Agent:
         """
@@ -15,6 +21,9 @@ class PublicTransportAgent(Agent):
         """
         return cls(
             name="Public Transport Agent",
+            instructions=public_transport_agent_system_prompt,
+            tools=[get_connections],
+            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
             instructions=(
                 "You are a specialist when it comes to planning trips using public transport. "
                 "You have access to a public transport API that allows you to look up connections "

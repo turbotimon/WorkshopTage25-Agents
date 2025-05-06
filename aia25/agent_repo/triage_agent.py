@@ -1,7 +1,15 @@
-from agents import Agent
+from aia25.bootstrap import *  # noqa: F403,E402
 
+import asyncio
+from textwrap import dedent
+from agents import Agent
+from agents.extensions.models.litellm_model import LitellmModel
+
+from aia25.agent_repo.maps import OpenStreetMapAgent
 from aia25.agent_repo.public_transport import PublicTransportAgent
 from aia25.agent_repo.scheduling_agent import SchedulingAgent
+from aia25.agent_repo.weather import WeatherAgent
+
 from aia25.agent_repo.topic_guardrail import topic_guardrail
 
 triage_agent = Agent(
@@ -26,6 +34,25 @@ triage_agent = Agent(
                 "then determine the connection that best fits with the user's calendar appointments"
             ),
         ),
+        asyncio.run(WeatherAgent.setup()).as_tool(
+            tool_name="get_weather",
+            tool_description="Ask the weather agent to get weather information for a specific location and time",
+        ),
+        asyncio.run(OpenStreetMapAgent.setup()).as_tool(
+            tool_name="explore_locations",
+            tool_description=dedent(
+                """Explore locations and find information about them. Useful if you want things such as:
+                - Find nearby places
+                - Get directions for routes
+                - Search for specific types of places
+                - Find the ideal meeting point for multiple people
+                - Get information about a specific place
+                - Explore a specific area
+                - etc.
+                """
+            ),
+        ),
     ],
+    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
     input_guardrails=[topic_guardrail],  # Add the guardrail here
 )
