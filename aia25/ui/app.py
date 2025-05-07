@@ -1,32 +1,31 @@
 from datetime import datetime
 from aia25.agent_repo.shared import GlobalContext
-from aia25.agent_repo.triage_agent import triage_agent
+from aia25.agent_repo.agent_service import execute_agent, get_default_agent
 from aia25.bootstrap import *  # noqa: F403,E402
 
 import chainlit as cl
-from agents import Agent, Runner, enable_verbose_stdout_logging
+from agents import enable_verbose_stdout_logging
 
 
 enable_verbose_stdout_logging()
 
 
 def get_agent_response(user_message: str):
-    agent: Agent = cl.user_session.get("agent")
+    agent = cl.user_session.get("agent")
+    history = cl.user_session.get("history") or []
+    global_context = cl.user_session.get("global_context") or GlobalContext()
 
-    # Retrieve the history from the user session and add the user message to it
-    history = cl.user_session.get("history") or [] + [{"role": "user", "content": user_message}]
+    # Execute agent with input and handle exceptions in the service layer
+    response, updated_history = execute_agent(
+        agent=agent, user_input=user_message, history=history, context=global_context
+    )
 
-    # retrieve the global context from the user session
-    global_context: GlobalContext = cl.user_session.get("global_context") or GlobalContext()
+    # Only update history if we got a valid updated history back
+    # (it will be None if the guardrail was triggered)
+    if updated_history is not None:
+        cl.user_session.set("history", updated_history)
 
-    # Run the agent with the user message and history
-    result = Runner.run_sync(starting_agent=agent, input=history, context=global_context)
-
-    # Overwrite the history with the new one in the user session
-    cl.user_session.set("history", result.to_input_list())
-
-    # Return only the final output
-    return result.final_output
+    return response
 
 
 @cl.on_chat_start
@@ -36,7 +35,7 @@ def on_chat_start():
     time_only = current_datetime.strftime("%H:%M:%S")
 
     # Reset the agent and history when the chat starts
-    cl.user_session.set("agent", triage_agent)
+    cl.user_session.set("agent", get_default_agent())
     cl.user_session.set("history", [])
     cl.user_session.set("global_context", GlobalContext(current_date=date_only, current_time=time_only))
 
