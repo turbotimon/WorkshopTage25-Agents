@@ -1,3 +1,4 @@
+import os
 from agents import Agent
 from agents.extensions.models.litellm_model import LitellmModel
 
