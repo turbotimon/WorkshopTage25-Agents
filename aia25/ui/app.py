@@ -33,7 +33,7 @@ async def get_agent_response(user_message: str) -> str:
     agent: Agent = cl.user_session.get("agent")
 
     # Retrieve the history from the user session and add the user message to it
-    history = (cl.user_session.get("history") or []) + [{"role": "user", "content": user_message}]
+    history = cl.user_session.get("history") or []
 
     # retrieve the global context from the user session
     global_context: GlobalContext = cl.user_session.get("global_context") or GlobalContext()
