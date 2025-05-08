@@ -63,7 +63,7 @@ class MCPServerRepository:
                     ],
                     "env": {"WEATHER_API_KEY": os.environ.get("WEATHER_API_KEY")},
                 },
-                client_session_timeout_seconds=15,
+                client_session_timeout_seconds=5,
             ),
             "openstreetmap": MCPServerStdio(
                 cache_tools_list=True,
@@ -75,11 +75,11 @@ class MCPServerRepository:
                         "osm-mcp-server",
                     ],
                 },
-                client_session_timeout_seconds=15,
+                client_session_timeout_seconds=5,
             ),
         }
 
-        # Enter async context for each serverß
+        # Enter async context for each server
         for name, server in servers.items():
             # Wrap the server call_tool method with a Chainlit step
             # server.call_tool = cl.step(type="tool")(server.call_tool)
