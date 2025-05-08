@@ -30,7 +30,7 @@ async def execute_agent(
     current_history = history + [{"role": "user", "content": user_input}]
 
     try:
-        result = await Runner.run(starting_agent=agent, input=current_history, context=context, hooks=DebugHook())
+        result = await Runner.run(starting_agent=agent, input=current_history, context=context)
 
         return result.final_output, result.to_input_list()
     except InputGuardrailTripwireTriggered:
