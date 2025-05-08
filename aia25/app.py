@@ -13,12 +13,22 @@ from exercise02.my_agents import execute_agent as execute_agent_ex02
 from exercise03.my_agents import execute_agent as execute_agent_ex03
 from exercise04.my_agents import execute_agent as execute_agent_ex04
 
+# from solution_exercise01.my_agents import execute_agent as execute_agent_ex01_solution
+from solution_exercise02.my_agents import execute_agent as execute_agent_ex02_solution
+
+# from solution_exercise03.my_agents import execute_agent as execute_agent_ex03_solution
+from solution_exercise04.my_agents import execute_agent as execute_agent_ex04_solution
+
 
 EXERCISE_TO_EXECUTE_AGENT = {
     "Exercise 1": execute_agent_ex01,
     "Exercise 2": execute_agent_ex02,
     "Exercise 3": execute_agent_ex03,
     "Exercise 4": execute_agent_ex04,
+    # "Exercise 1 Solution": execute_agent_ex01_solution,
+    "Exercise 2 Solution": execute_agent_ex02_solution,
+    # "Exercise 3 Solution": execute_agent_ex03_solution,
+    "Exercise 4 Solution": execute_agent_ex04_solution,
 }
 
 
@@ -56,7 +66,16 @@ async def on_chat_start():
             cl.input_widget.Select(
                 id="exercise",
                 label="Exercise",
-                values=["Exercise 1", "Exercise 2", "Exercise 3", "Exercise 4"],
+                values=[
+                    "Exercise 1",
+                    "Exercise 2",
+                    "Exercise 3",
+                    "Exercise 4",
+                    # "Exercise 1 Solution",
+                    "Exercise 2 Solution",
+                    # "Exercise 3 Solution",
+                    "Exercise 4 Solution",
+                ],
                 initial_index=0,
             ),
             cl.input_widget.Switch(
