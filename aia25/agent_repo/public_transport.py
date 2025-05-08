@@ -46,9 +46,6 @@ def public_transport_agent_system_prompt(
 class PublicTransportAgent(Agent):
     def __init__(self):
         super().__init__(
-    @classmethod
-    def setup(cls) -> Agent:
-        return cls(
             name="Public Transport Agent",
             instructions=public_transport_agent_system_prompt,
             tools=[get_connections],
