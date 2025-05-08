@@ -37,13 +37,17 @@ def get_connections(start: str, end: str, date: str, time: str, is_arrival_time:
     Gets public transport connections for a given start and end location and a specific date and time.
     Requires UTF-8 encoded arguments, do not use unicode characters!
 
-    :param start: A string representing either the name of the station or its ID
-    :param end: A string representing either the name of the station or its ID
-    :param date: The date for which to check the connections (iso format)
-    :param time: The time for which to check the connections (%H:%M)
-    :param is_arrival_time: Boolean value specifying whether the date and time refer
-        to the arrival (True) or the departure (False). The argument should be formatted
-        as a string because it will be converted into a boolean upon executing this tool.
+    Args:
+        start: A string representing either the name of the station or its ID
+        end: A string representing either the name of the station or its ID
+        date: The date for which to check the connections (iso format)
+        time: The time for which to check the connections (%H:%M)
+        is_arrival_time: Boolean value specifying whether the date and time refer
+            to the arrival (True) or the departure (False). The argument should be formatted
+            as a string because it will be converted into a boolean upon executing this tool.
+
+    Returns:
+        A list of dictionaries containing the connection details.
     """
     response = requests.get(
         f"http://transport.opendata.ch/v1/connections?from={start}&to={end}&date={date}&time={time}&isArrivalTime={int(is_arrival_time)}"

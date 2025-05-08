@@ -1,30 +1,52 @@
 from aia25.bootstrap import *  # noqa: F403,E402
 
-import os
-from agents import Agent
-from agents.extensions.models.litellm_model import LitellmModel
+from textwrap import dedent
 
+from agents import Agent, RunContextWrapper
+
+from aia25.agent_repo.shared import GlobalContext
 from aia25.tools_repo.public_transport import get_connections
-from aia25.tools_repo.time import get_current_date_and_time
+
+
+def public_transport_agent_system_prompt(
+    context: RunContextWrapper[GlobalContext], agent: Agent[GlobalContext]
+) -> str:
+    ctx = context.context
+    return dedent(
+        f"""
+        You are a public transport assistant that helps users find the best public transport 
+        connections based on their restrictions and preferences. 
+
+        Current date: {ctx.current_date}
+        Current time: {ctx.current_time}
+
+        # Tasks
+        - Find the best public transport connections between two locations.
+        - Provide travel times and schedules.
+        - Answer questions about public transport.
+        - Help users plan their trips using public transport.
+
+        # Process
+        1. For travel requests: Use YYYY-MM-DD format
+        2. If more details are needed, ask the user for clarification.
+        3. Adhere to the explicit or implicitly provided travel date and time.
+        4. Return the optimal connections with travel times and schedules.
+        5. Explicitly state travel delays, transfers, and any other relevant information.
+
+        IMPORTANT: After calling the get_connections tool and receiving sufficient information:
+        1. Stop calling tools
+        2. Synthesize the information into a clear response
+        3. Provide a final answer to the user's query
+
+        DO NOT call the same tool multiple times unless specifically needed for different parameters.
+        """
+    )
 
 
 class PublicTransportAgent(Agent):
     def __init__(self):
-        assert "AGENT_MODEL" in os.environ, "AGENT_MODEL environment variable is not set"
-        assert "OPENROUTER_API_KEY" in os.environ, "OPENROUTER_API_KEY environment variable is not set"
         super().__init__(
             name="Public Transport Agent",
-            instructions=(
-                "You are a specialist when it comes to planning trips using public transport. "
-                "You have access to a public transport API that allows you to look up connections "
-                "between two locations. You can also get the current date and time, which is useful "
-                "for planning trips. Your goal is to help the user if they have any questions about "
-                "public transport. You can answer questions like: 'When does the next train leave?' "
-                "or 'How long does it take to get from A to B?'. You can also help the user plan a trip "
-                "by providing them with the best connections and travel times. Make sure to plan your "
-                "actions before calling a tool. If you don't have enough information to answer the "
-                "user's question, ask them for more details."
-            ),
-            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
-            tools=[get_current_date_and_time, get_connections],
+            instructions=public_transport_agent_system_prompt,
+            tools=[get_connections],
         )

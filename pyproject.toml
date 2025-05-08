@@ -15,8 +15,15 @@ dependencies = [
     "pytz>=2025.2",
 ]
 
+[tool.setuptools]
+packages = ["aia25"]
+
 [dependency-groups]
 dev = [
     "black>=25.1.0",
+    "ipdb>=0.13.13",
     "ptpython>=3.0.30",
 ]
+
+[project.scripts]
+app = "aia25.cli:main"

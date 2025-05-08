@@ -1,10 +1,16 @@
-from agents import Agent, Runner, InputGuardrailTripwireTriggered, TResponseInputItem
+import asyncio
+from agents import (
+    Agent,
+    Runner,
+    InputGuardrailTripwireTriggered,
+    TResponseInputItem,
+)
 from aia25.agent_repo.shared import GlobalContext
 from aia25.agent_repo.topic_guardrail import OFF_TOPIC_MESSAGE
 from typing import Any, List, Dict
 
 
-def execute_agent(
+async def execute_agent(
     agent: Agent, user_input: str, history: List[Dict[str, str]], context: GlobalContext
 ) -> tuple[Any, list[TResponseInputItem]]:
     """
@@ -24,7 +30,7 @@ def execute_agent(
     current_history = history + [{"role": "user", "content": user_input}]
 
     try:
-        result = Runner.run_sync(starting_agent=agent, input=current_history, context=context)
+        result = await Runner.run(starting_agent=agent, input=current_history, context=context)
 
         return result.final_output, result.to_input_list()
     except InputGuardrailTripwireTriggered:
@@ -52,7 +58,7 @@ if __name__ == "__main__":
     user_input = "What is the meaning of life?"
     history = []
 
-    response, new_history = execute_agent(triage_agent, user_input, history, context)
+    response, new_history = asyncio.run(execute_agent(triage_agent, user_input, history, context))
     print("Response:", response)
     if new_history is None:
         print("Guardrail triggered: history not updated")
