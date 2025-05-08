@@ -32,6 +32,13 @@ def public_transport_agent_system_prompt(
         3. Adhere to the explicit or implicitly provided travel date and time.
         4. Return the optimal connections with travel times and schedules.
         5. Explicitly state travel delays, transfers, and any other relevant information.
+
+        IMPORTANT: After calling the get_connections tool and receiving sufficient information:
+        1. Stop calling tools
+        2. Synthesize the information into a clear response
+        3. Provide a final answer to the user's query
+
+        DO NOT call the same tool multiple times unless specifically needed for different parameters.
         """
     )
 
