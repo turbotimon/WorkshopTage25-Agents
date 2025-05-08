@@ -1,8 +1,7 @@
-# calendar_client.py
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, NamedTuple
 from dateutil import tz
-from ics import Calendar, Event  # tiny, pure‑Python
+from ics import Calendar, Event
 
 
 class CalendarEvent(NamedTuple):
@@ -99,61 +98,35 @@ class ICSClient:
             f.writelines(self.cal.serialize_iter())
 
 
-# identical interface, different engines ----------------------
-# Outlook: subclass using O365.Event objects
-# CalDAV : subclass using caldav.Event objects
-
 if __name__ == "__main__":
-    import os
-    import sys
-    from pathlib import Path
+    from datetime import datetime, timedelta
 
-    # Get the path to ExampleCalendar.ics
-    current_dir = Path(os.path.dirname(os.path.abspath(__file__)))
-    calendar_path = current_dir / "ExampleCalendar.ics"
+    calendar_file = "ExampleCalendar.ics"
 
-    if not calendar_path.exists():
-        print(f"Error: Calendar file not found at {calendar_path}")
-        sys.exit(1)
+    # Create a fresh calendar file
+    with open(calendar_file, "w", encoding="utf8") as f:
+        f.write("BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Example//Example Calendar//EN\nEND:VCALENDAR")
 
-    # Initialize the calendar client
-    client = ICSClient(str(calendar_path))
+    client = ICSClient(calendar_file)
 
-    # Test listing events for next month - use timezone-aware datetimes
-    today = datetime.now(tz.UTC)
-    next_month = datetime(today.year, today.month + 1 if today.month < 12 else 1, 1, tzinfo=tz.UTC)
-    end_next_month = datetime(next_month.year, next_month.month + 1 if next_month.month < 12 else 1, 1, tzinfo=tz.UTC)
+    tomorrow_date = date.today() + timedelta(days=1)
 
-    print(f"\nListing events from {next_month.strftime('%Y-%m-%d')} to {end_next_month.strftime('%Y-%m-%d')}:")
-    events = client.list_events(next_month, end_next_month)
+    # Create a datetime at 2pm tomorrow
+    tomorrow_2pm = datetime.combine(tomorrow_date, datetime.strptime("2 PM", "%I %p").time())
+    print(f"Adding event for: {tomorrow_2pm.strftime('%Y-%m-%d %H:%M')}")
 
-    if events:
-        for i, event in enumerate(events, 1):
-            print(f"Event {i}: {event.name}")
-            print(f"  Time: {event.start.strftime('%Y-%m-%d %H:%M')} - {event.end.strftime('%Y-%m-%d %H:%M')}")
-            if event.location:
-                print(f"  Location: {event.location}")
-            print()
-    else:
-        print("No events found in the specified time range.")
-
-    # Test adding a new event - use timezone-aware datetimes
-    new_event_start = datetime(today.year, today.month, today.day, 14, 0, tzinfo=tz.UTC)  # Today at 2 PM
-    new_event_end = datetime(today.year, today.month, today.day, 15, 0, tzinfo=tz.UTC)  # Today at 3 PM
-
-    print(
-        f"\nAdding a new event 'Team Meeting' from {new_event_start.strftime('%Y-%m-%d %H:%M')} to {new_event_end.strftime('%Y-%m-%d %H:%M')}"
+    client.add_event(
+        summary="Team Meeting",
+        start=tomorrow_2pm,  # Tomorrow at 2pm
+        end=tomorrow_2pm + timedelta(hours=1),  # 1 hour duration
+        location="Meeting Room A",
     )
-    client.add_event("Team Meeting", new_event_start, new_event_end, location="Conference Room B")
+    print("Added new event: Team Meeting for tomorrow at 2pm")
 
-    # Verify the event was added
-    today_start = datetime(today.year, today.month, today.day, 0, 0, tzinfo=tz.UTC)
-    tomorrow_start = datetime(today.year, today.month, today.day + 1, 0, 0, tzinfo=tz.UTC)
-    events = client.list_events(today_start, tomorrow_start)
-    print("\nEvents for today after adding the new event:")
-    for i, event in enumerate(events, 1):
-        print(f"Event {i}: {event.name}")
-        print(f"  Time: {event.start.strftime('%Y-%m-%d %H:%M')} - {event.end.strftime('%Y-%m-%d %H:%M')}")
-        if event.location:
-            print(f"  Location: {event.location}")
-        print()
+    tomorrow_noon = datetime.combine(tomorrow_date, datetime.min.time().replace(hour=12))
+    tomorrow_6pm = datetime.combine(tomorrow_date, datetime.min.time().replace(hour=18))
+
+    # Verify the newly added event appears, We'll look specifically for events tomorrow afternoon
+    print()
+    for e in client.list_events(tomorrow_noon, tomorrow_6pm):
+        print(f"- {e.name}: {e.start.strftime('%Y-%m-%d %H:%M')} - {e.end.strftime('%H:%M')} at {e.location}")
