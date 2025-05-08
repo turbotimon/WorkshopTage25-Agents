@@ -7,7 +7,7 @@ from textwrap import dedent
 
 from agents import Agent
 
-from exercise01.my_tools import ask_for_clarification, get_connections, get_current_date_and_time, think
+from .my_tools import ask_for_clarification, get_connections, get_current_date_and_time, think
 
 
 public_transport_agent = Agent(
