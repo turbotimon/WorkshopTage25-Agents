@@ -26,6 +26,7 @@ public_transport_agent = Agent(
         - think: Use this tool for planning and observing the current state of the conversation.
         - get_connections: Find the best public transport connections between two locations.
         - get_current_date_and_time: Get the current date and time in ISO format.
+        - ask_for_clarification: Ask the user for more information if needed.
 
         If you leave the date and time empty, the current date and time will be used.
         
