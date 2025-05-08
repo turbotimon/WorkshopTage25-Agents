@@ -23,8 +23,25 @@ uv sync
 
 # Repository structure
 
-The repository is divided into three subdirectories: 
+The repository is structured as follows:
 
-1. The directory `ui` includes a streamlit interface that you can use to interact with your agents. You might need to change what gets called in the interface based on the exercise that you are working on.
-2. Under `agents` you will implement the code for your own agents. These agents will be called by the streamlit code.
-3. The `exercises` directory includes the exercise instructions in the form of Markdown files.
+1. The module `aia25` contains the UI that interacts directly calls the agents that you will implement.
+2. Modules `exercise01` to `exercise04` contain the exercise code. The first exercise is just the setup so there is no solution.
+3. Modules `solution_exercise02` to `solutions_exercise04` contain the solutions.
+
+
+# Running the app
+
+You can either run the UI using the vscode config or using the command `uv run chainlit run aia25/app.py -w -h`.
+
+If you first execute `uv pip install -e .` in the project root you will have access to the shorthand command `uv run app`, which will also just start the UI.
+
+# Selecting an agent to run
+
+To choose which agent you want to interact with, click on the gear icon on the left hand side of the chat:
+
+![Chat Settings](images/chat_settings.png)
+
+There you will be able to choose which agent is executed (using the `execute_agent` function implemented in the `my_agents.py` in each module):
+
+![Agent Selection](images/agent_selection.png)
