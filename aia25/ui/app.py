@@ -39,7 +39,7 @@ async def get_agent_response(user_message: str) -> str:
     global_context: GlobalContext = cl.user_session.get("global_context") or GlobalContext()
 
     # Execute agent with input and handle exceptions in the service layer
-    response, updated_history = execute_agent(
+    response, updated_history = await execute_agent(
         agent=agent, user_input=user_message, history=history, context=global_context
     )
 
