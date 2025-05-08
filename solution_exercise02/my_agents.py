@@ -1,9 +1,12 @@
+import os
+from datetime import datetime
 from textwrap import dedent
 from typing import Any, Dict, List
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
+from agents.extensions.models.litellm_model import LitellmModel
 from pydantic import BaseModel
 from aia25.tools_repo.calendar_scheduling import get_calendar_appointments
-from .my_tools import get_connections
+from .my_tools import get_connections, think, ask_for_clarification
 
 
 class GlobalContext(BaseModel):
@@ -42,7 +45,8 @@ def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], ag
 scheduling_agent = Agent(
     name="Scheduling Agent",
     instructions=scheduling_agent_system_prompt,
-    tools=[get_calendar_appointments],
+    tools=[think, ask_for_clarification, get_calendar_appointments],
+    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -51,32 +55,30 @@ def public_transport_agent_system_prompt(
 ) -> str:
     ctx = context.context
     return dedent(
-        f"""
-        You are a public transport assistant that helps users find the best public transport
-        connections based on their restrictions and preferences.
+        f"""You are a public transport assistant that helps users find the best public transport
+        connections based on their needs. Whenever you receive a query, you first think about it 
+        and figure out what the user is asking for. Then you either directly answer the question
+        if you know the answer, or you make a plan in which order you will call the tools to get 
+        the required information. If there is no combination of tool calls that can help you
+        answer the questions, you should ask the user for more information. If you are unsure about
+        the start or end location or about the specific travel date and time that you should use in
+        the tool calls, you should ask the user for clarification. 
 
         Current date: {ctx.current_date}
         Current time: {ctx.current_time}
+        
+        You have access to the following tools:
+        - think: Use this tool for planning and observing the current state of the conversation.
+        - get_connections: Find the best public transport connections between two locations.
+        - ask_for_clarification: Ask the user for more information if needed.
 
-        # Tasks
-        - Find the best public transport connections between two locations.
-        - Provide travel times and schedules.
-        - Answer questions about public transport.
-        - Help users plan their trips using public transport.
+        If you leave the date and time empty, the current date and time will be used.
+        
+        Never call a tool twice with the same parameters. Always inspect the tool output and 
+        ask yourself whether that already answers the user's question. If it does, stop calling tools and
+        synthesize the information into a clear response. Provide a final answer to the user's query.
 
-        # Process
-        1. For travel requests: Use YYYY-MM-DD format
-        2. If more details are needed, ask the user for clarification.
-        3. Adhere to the explicit or implicitly provided travel date and time.
-        4. Return the optimal connections with travel times and schedules.
-        5. Explicitly state travel delays, transfers, and any other relevant information.
-
-        IMPORTANT: After calling the get_connections tool and receiving sufficient information:
-        1. Stop calling tools
-        2. Synthesize the information into a clear response
-        3. Provide a final answer to the user's query
-
-        DO NOT call the same tool multiple times unless specifically needed for different parameters.
+        Whenever you plan something, immediately follow up with the plan before answering the question.
         """
     )
 
@@ -84,7 +86,8 @@ def public_transport_agent_system_prompt(
 public_transport_agent = Agent(
     name="Public Transport Agent",
     instructions=public_transport_agent_system_prompt,
-    tools=[get_connections],
+    tools=[think, ask_for_clarification, get_connections],
+    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -101,6 +104,8 @@ triage_agent = Agent(
     name="Triage agent",
     instructions=triage_agent_system_prompt,
     tools=[
+        think,
+        ask_for_clarification,
         public_transport_agent.as_tool(
             tool_name="find_transport_routes",
             tool_description="Find public transport routes between two locations for a specific date and time",
@@ -113,6 +118,7 @@ triage_agent = Agent(
             ),
         ),
     ],
+    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -131,6 +137,14 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
     """
     current_history = history + [{"role": "user", "content": user_input}]
 
-    result = await Runner.run(starting_agent=triage_agent, input=current_history)
+    current_datetime = datetime.now()
+    date_only = current_datetime.strftime("%Y-%m-%d")
+    time_only = current_datetime.strftime("%H:%M:%S")
+
+    result = await Runner.run(
+        starting_agent=triage_agent,
+        input=current_history,
+        context=GlobalContext(current_date=date_only, current_time=time_only),
+    )
 
     return result.final_output, result.to_input_list()
