@@ -109,7 +109,6 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
 
     Returns:
         A tuple containing (response_message, updated_history)
-        If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
     current_history = history + [{"role": "user", "content": user_input}]

@@ -1,10 +1,9 @@
 from aia25.bootstrap import *  # noqa: F403,E402
 import sys
+from pathlib import Path
 
 from agents import enable_verbose_stdout_logging
 import chainlit as cl
-
-from aia25.tools_repo.mcp_servers import MCPServerRepository
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -108,5 +107,37 @@ async def handle_message(message: cl.Message):
 
 @cl.server.app.on_event("shutdown")
 async def on_shutdown():
-    repo = await MCPServerRepository.get_instance()
+    # Get the current selected exercise from the user session
+    current_exercise = cl.user_session.get("execute_agent", None)
+
+    # Variable to hold the correct repository class
+    repo_class = None
+
+    # Determine the repository class based on the selected exercise
+    if current_exercise == execute_agent_ex02:
+        from exercise02.my_tools import McpServerRepository
+
+        repo_class = McpServerRepository
+    elif current_exercise == execute_agent_ex03:
+        from exercise03.my_agents import McpServerRepository
+
+        repo_class = McpServerRepository
+    elif current_exercise == execute_agent_ex04:
+        from exercise04.my_agents import McpServerRepository
+
+        repo_class = McpServerRepository
+    elif current_exercise == execute_agent_ex02_solution:
+        from solution_exercise02.my_agents import McpServerRepository
+
+        repo_class = McpServerRepository
+    elif current_exercise == execute_agent_ex03_solution:
+        from solution_exercise03.my_agents import McpServerRepository
+
+        repo_class = McpServerRepository
+    elif current_exercise == execute_agent_ex04_solution:
+        from solution_exercise04.my_agents import McpServerRepository
+
+        repo_class = McpServerRepository
+
+    repo = await repo_class.get_instance()
     await repo.aclose()
