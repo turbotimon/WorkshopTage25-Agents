@@ -5,6 +5,7 @@ import re
 from pydantic import BaseModel
 import requests
 from agents import function_tool
+from agents.mcp import MCPServerStdio
 from .calendar_client import ICSClient
 import chainlit as cl
 import asyncio
@@ -202,6 +203,7 @@ class MCPServerRepository:
 
     async def _setup(self):
         servers = {
+            # TODO: uncomment this to make exercise 3 work
             # "openstreetmap": MCPServerStdio(
             #     cache_tools_list=True,
             #     params={

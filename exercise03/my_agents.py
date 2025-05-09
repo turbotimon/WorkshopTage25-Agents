@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
 from agents.extensions.models.litellm_model import LitellmModel
 from pydantic import BaseModel
-from .my_tools import get_connections, think, ask_for_clarification, get_calendar_appointments
+from .my_tools import MCPServerRepository, get_connections, think, ask_for_clarification, get_calendar_appointments
 
 
 class GlobalContext(BaseModel):

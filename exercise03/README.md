@@ -20,7 +20,7 @@ location-based questions (nearby places, route directions, etc.).
 | File | Purpose | Editable? |
 |------|---------|-----------|
 | `exercise03/my_agents.py` | Agents scaffold – **TODOs live here** | ✅ |
-| `exercise03/my_tools.py`  | Helper tools & `MCPServerRepository`  | ❌ leave as is |
+| `exercise03/my_tools.py`  | Helper tools & `MCPServerRepository`  | Uncomment the code (see TODO comment) |
 | other repo files          | Glue / utilities                      | 🔒 read-only |
 
 ---
@@ -44,8 +44,13 @@ location-based questions (nearby places, route directions, etc.).
 - Make sure to use a meaningful tool description and name
 - You might want to use the inspector or call `list_tools` to see what tools the server offers. Alternatively, look it up on the GitHub repository. This will help you craft a better tool description.
 
+### 3.3 Uncomment the code in `MCPServerRepository`
 
-### 3.3  Testing and refinement
+- Uncomment the code as mentioned in the TODO comment in the `MCPServerRepository` in `my_tools.py`
+- If you want to run the solution, you also need to uncomment it in the `solution_exercise03` folder
+
+
+### 3.4  Testing and refinement
 
 - Test out the agent with different instructions
 - Use different prompts and see if the agent performs better or worse
