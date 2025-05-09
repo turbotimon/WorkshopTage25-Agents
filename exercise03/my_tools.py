@@ -2,7 +2,6 @@ from contextlib import AsyncExitStack
 from datetime import datetime
 from pathlib import Path
 import re
-from agents.mcp import MCPServerStdio
 from pydantic import BaseModel
 import requests
 from agents import function_tool
@@ -203,19 +202,19 @@ class MCPServerRepository:
 
     async def _setup(self):
         servers = {
-            "openstreetmap": MCPServerStdio(
-                cache_tools_list=True,
-                params={
-                    "command": "uvx",
-                    "args": [
-                        "--from",
-                        "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
-                        "osm-mcp-server",
-                    ],
-                },
-                # Increase timeout to avoid MCP server initialization errors
-                client_session_timeout_seconds=10,
-            ),
+            # "openstreetmap": MCPServerStdio(
+            #     cache_tools_list=True,
+            #     params={
+            #         "command": "uvx",
+            #         "args": [
+            #             "--from",
+            #             "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
+            #             "osm-mcp-server",
+            #         ],
+            #     },
+            #     # Increase timeout to avoid MCP server initialization errors
+            #     client_session_timeout_seconds=10,
+            # ),
         }
 
         # Enter async context for each server
