@@ -288,18 +288,18 @@ class MCPServerRepository:
 
     async def _setup(self):
         servers = {
-            # "openstreetmap": MCPServerStdio(
+            # "weather": MCPServerStdio(
             #     cache_tools_list=True,
             #     params={
             #         "command": "uvx",
             #         "args": [
             #             "--from",
-            #             "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
-            #             "osm-mcp-server",
+            #             "git+https://github.com/rolshoven/weather-mcp-server.git",
+            #             "weather-mcp-server",
             #         ],
+            #         "env": {"WEATHER_API_KEY": os.environ.get("WEATHER_API_KEY")},
             #     },
-            #     # Increase timeout to avoid MCP server initialization errors
-            #     client_session_timeout_seconds=10,
+            #     client_session_timeout_seconds=5,
             # ),
         }
 
