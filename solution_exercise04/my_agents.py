@@ -116,6 +116,54 @@ class OpenStreetMapAgent(Agent):
         )
 
 
+class TopicCheckOutput(BaseModel):
+    is_relevant: bool
+    reasoning: str
+
+
+guardrail_agent_system_prompt = """
+You are an assistant that determines if user queries are relevant to either:
+1. Public transport (buses, trains, schedules, routes, etc.)
+2. Calendar appointments and scheduling
+3. Looking for a restaurant or a place to eat
+
+ONLY respond with a properly formatted JSON object with the following structure:
+{
+    "is_relevant": true/false,
+    "reasoning": "Your explanation here"
+}
+
+Set "is_relevant" to true ONLY if the query clearly relates to one or more of the topics.
+Provide brief reasoning for your decision in the "reasoning" field.
+
+IMPORTANT: Always respond with valid JSON format that can be parsed. Do not include any text before or after the JSON object.
+"""
+
+
+guardrail_agent = Agent(
+    name="Topic Check Guardrail",
+    instructions=guardrail_agent_system_prompt,
+    output_type=TopicCheckOutput,
+    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+)
+
+
+@input_guardrail
+async def topic_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list[TResponseInputItem],
+) -> GuardrailFunctionOutput:
+
+    result = await Runner.run(guardrail_agent, input, context=ctx.context)
+    result = result.final_output
+
+    return GuardrailFunctionOutput(
+        output_info=result.reasoning,
+        tripwire_triggered=not result.is_relevant,
+    )
+
+
 triage_agent_system_prompt = """
 You are a smart assistant that helps users plan their trips based on public transport
 schedules, their calendar appointments, and other relevant information. You can make use
@@ -162,51 +210,8 @@ triage_agent = Agent(
         ),
     ],
     model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    input_guardrails=[topic_guardrail],
 )
-
-
-class TopicCheckOutput(BaseModel):
-    is_relevant: bool
-    reasoning: str
-
-
-guardrail_agent_system_prompt = """
-You are an assistant that determines if user queries are relevant to any of these topics:
-1. Public transport (buses, trains, schedules, routes, connections, etc.)
-2. Calendar and scheduling (appointments, meetings, time management, etc.)
-3. Trip planning and optimization (finding optimal routes considering calendar)
-4. Location-based information (nearby places, directions, points of interest, geographical data)
-5. Combined queries involving transport, scheduling, and location information
-
-Set "is_relevant" to true ONLY if the query clearly relates
-to one or more of the topics listed above.
-
-Provide clear reasoning about why the query is or is not relevant to these topics.
-"""
-
-
-guardrail_agent = Agent(
-    name="Topic Check Guardrail",
-    instructions=guardrail_agent_system_prompt,
-    output_type=TopicCheckOutput,
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
-)
-
-
-@input_guardrail
-async def topic_guardrail(
-    ctx: RunContextWrapper[None],
-    agent: Agent,
-    input: str | list[TResponseInputItem],
-) -> GuardrailFunctionOutput:
-
-    result = await Runner.run(guardrail_agent, input, context=ctx.context)
-    result = result.final_output
-
-    return GuardrailFunctionOutput(
-        output_info=result.reasoning,
-        tripwire_triggered=not result.is_relevant,
-    )
 
 
 async def execute_agent(user_input: str, history: list[dict[str, str]]) -> tuple[Any, list[TResponseInputItem]]:
