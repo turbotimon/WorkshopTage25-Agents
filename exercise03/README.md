@@ -1,7 +1,7 @@
 # Exercise 03 – **OpenStreetMap Agent** 🌐🧭
-    
+
 In the previous session you learned how an **MCP server** exposes external
-functionality (weather, maps, …) and how to attach one to an agent.  
+functionality (maps, …) and how to attach one to an agent.
 Your mission: **implement `OpenStreetMapAgent`** so our assistant can answer
 location-based questions (nearby places, route directions, etc.).
 
@@ -9,8 +9,8 @@ location-based questions (nearby places, route directions, etc.).
 
 ## 1 Learning goals
 
-* Write an **async setup factory** for an agent.  
-* Interact with the **MCP repository** to obtain a server handle.  
+* Write an **async setup factory** for an agent.
+* Interact with the **MCP repository** to obtain a server handle.
 * Register the new agent as a **tool** inside a larger multi-agent system.
 
 ---
@@ -29,13 +29,13 @@ location-based questions (nearby places, route directions, etc.).
 
 ### 3.1 `OpenStreetMapAgent.setup()`
 
-1. Call the `get_instance()` on `MCPServerRepository` to obtain the singleton.  
-2. Retrieve the server server with the key `openstreetmaps`.  
-3. Return `cls(...)` with  
+1. Call the `get_instance()` on `MCPServerRepository` to obtain the singleton.
+2. Retrieve the server server with the key `openstreetmaps`.
+3. Return `cls(...)` with
     * `name` - a meaningful agent name
-    * `instructions` – one or two sentences describing its domain.  
+    * `instructions` – one or two sentences describing its domain.
     * `tools` - the agent should still be able to think and ask for clarifications
-    * `mcp_servers` - the retrieved MCPS server  
+    * `mcp_servers` - the retrieved MCPS server
     * `model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY"))`
 
 ### 3.2 Register the tool in **`triage_agent`**
@@ -57,6 +57,6 @@ location-based questions (nearby places, route directions, etc.).
 
 ## 4 Hints
 
-* `MCPServerRepository` is **already implemented** – no need to touch it.  
+* `MCPServerRepository` is **already implemented** – no need to touch it.
 * Remember that `setup()` is **async**, but you call it synchronously in
     `triage_agent` via `asyncio.run(...)`.
