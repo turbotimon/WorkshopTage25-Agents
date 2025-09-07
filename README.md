@@ -1,47 +1,71 @@
-# AI Agents in Action: Building Smart, Open-Source LLM Workflows
-This is the official repository of the [Open Source AI Workshop](https://www.ch-open.ch/open-source-ai-workshops/) with the above name that takes place on May 9, 2025 at Bern University of Applied Sciences, Brückenstrasse 73, 3005 Bern.
+# AI Agents in Action: Building Smart, Open-Source LLM-based Workflows
 
-# First steps
+Welcome to the official repository for the AI Agents Workshop! This guide will walk you through setting up your environment and running the exercises.
 
-## 1. Installing uv
+## Getting Started
 
-Please install the package and project manager **uv** for Python. You can install it directly via pip:
+Follow these steps to get everything up and running.
+
+### 1. Install `uv`
+
+This project uses `uv`, a fast Python package and project manager. If you don't have it installed, you can use `pip`:
 
 ```bash
 pip install uv
 ```
 
-Alternatively, follow one of the installation procedures described [here](https://docs.astral.sh/uv/getting-started/installation/).
+For other installation methods, see the [official `uv` documentation](https://docs.astral.sh/uv/getting-started/installation/).
 
-## 2. Installing the dependencies
+### 2. Install Dependencies
 
-After you installed uv, you can  use the following command to install the required Python dependencies:
+Once `uv` is installed, sync the project dependencies:
 
 ```bash
 uv sync
 ```
 
-# Repository structure
+This command installs all the necessary packages listed in the `uv.lock` file.
 
-The repository is structured as follows:
+## Running the Application
 
-1. The module `aia25` contains the UI that interacts directly calls the agents that you will implement.
-2. Modules `exercise01` to `exercise04` contain the exercise code. The first exercise is just the setup so there is no solution.
-3. Modules `solution_exercise02` to `solutions_exercise04` contain the solutions.
+You have two options for running the application:
 
+1.  **Using the Command Line:**
+    Run the following command in your terminal at the project root:
 
-# Running the app
+    ```bash
+    uv run chainlit run aia25/app.py -w -h
+    ```
 
-You can either run the UI using the vscode config or using the command `uv run chainlit run aia25/app.py -w -h`.
+2.  **Using the Shorthand Command:**
+    First, install the project in editable mode:
+    ```bash
+    uv pip install -e .
+    ```
+    Then, you can use the shorthand command:
+    ```bash
+    uv run app
+    ```
+    This will start the user interface.
 
-If you first execute `uv pip install -e .` in the project root you will have access to the shorthand command `uv run app`, which will also just start the UI.
+## Repository Structure
 
-# Selecting an agent to run
+The repository is organized into the following directories:
 
-To choose which agent you want to interact with, click on the gear icon on the left hand side of the chat:
+-   `aia25/`: Contains the core application logic and user interface, powered by Chainlit.
+-   `exercise01/` to `exercise04/`: These folders contain the exercises for the workshop.
+-   `solution_exercise02/` to `solution_exercise04/`: These folders contain the solutions to the corresponding exercises.
+-   `images/`: Contains images used in the documentation.
 
-![Chat Settings](images/chat_settings.png)
+## How to Use the Workshop App
 
-There you will be able to choose which agent is executed (using the `execute_agent` function implemented in the `my_agents.py` in each module):
+1.  **Start the application** using one of the methods described above.
+2.  **Select an agent** to interact with by clicking the gear icon on the left side of the chat interface.
 
-![Agent Selection](images/agent_selection.png)
+    ![Chat Settings](images/chat_settings.png)
+
+3.  **Choose the agent** you want to run from the dropdown menu. Each agent corresponds to an `execute_agent` function within the `my_agents.py` file of each exercise module.
+
+    ![Agent Selection](images/agent_selection.png)
+
+Now you're all set! Enjoy the workshop.
