@@ -120,7 +120,11 @@ of geographical location data such as nearby places, route directions, etc.
 2. Then, check the user's calendar appointments for the travel date.
 3. If appropriate, take into account contextual information to improve the trip planning.
 
-When referring to an appointment, always mention the name of the appointment.
+When referring to an appointment, always mention the name of the appointment. Do not recall
+points of interests (such as nearby places) or other geographical information on your own, 
+ALWAYS use the explore_locations tool to ensure up-to-date information. You do not have access
+to any other location services.
+
 Answer in a friendly and helpful manner.
 """
 
@@ -144,15 +148,9 @@ triage_agent = Agent(
         asyncio.run(OpenStreetMapAgent.setup()).as_tool(
             tool_name="explore_locations",
             tool_description=dedent(
-                """Explore locations and find information about them. Useful if you want things such as:
-                - Find nearby places
-                - Get directions for routes
-                - Search for specific types of places
-                - Find the ideal meeting point for multiple people
-                - Get information about a specific place
-                - Explore a specific area
-                - etc.
-                """
+                """Find information about locations. Can be used to geocode addresses, find nearby places,
+                get walking directions from point A to B, and suggest meeting spots for two people in 
+                different locations."""
             ),
         ),
     ]
