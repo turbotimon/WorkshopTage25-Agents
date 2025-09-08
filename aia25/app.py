@@ -1,31 +1,45 @@
+import importlib
 from aia25.bootstrap import *  # noqa: F403,E402
 import sys
 from pathlib import Path
+from types import ModuleType
 
-from agents import enable_verbose_stdout_logging
+import mlflow
 import chainlit as cl
+from agents import enable_verbose_stdout_logging
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from exercise01.my_agents import execute_agent as execute_agent_ex01
-from exercise02.my_agents import execute_agent as execute_agent_ex02
-from exercise03.my_agents import execute_agent as execute_agent_ex03
-from exercise04.my_agents import execute_agent as execute_agent_ex04
 
-from solution_exercise02.my_agents import execute_agent as execute_agent_ex02_solution
-from solution_exercise03.my_agents import execute_agent as execute_agent_ex03_solution
-from solution_exercise04.my_agents import execute_agent as execute_agent_ex04_solution
-
-
-EXERCISE_TO_EXECUTE_AGENT = {
-    "Exercise 1": execute_agent_ex01,
-    "Exercise 2": execute_agent_ex02,
-    "Exercise 3": execute_agent_ex03,
-    "Exercise 4": execute_agent_ex04,
-    "Exercise 2 Solution": execute_agent_ex02_solution,
-    "Exercise 3 Solution": execute_agent_ex03_solution,
-    "Exercise 4 Solution": execute_agent_ex04_solution,
+EXERCISE_TO_MODULE_IMPORT = {
+    "Exercise 1": "exercise01.my_agents",
+    "Exercise 2": "exercise02.my_agents",
+    "Exercise 3": "exercise03.my_agents",
+    "Exercise 4": "exercise04.my_agents",
+    "Exercise 2 Solution": "solution_exercise02.my_agents",
+    "Exercise 3 Solution": "solution_exercise03.my_agents",
+    "Exercise 4 Solution": "solution_exercise04.my_agents",
 }
+
+
+async def load_exercise_agents_module(exercise_name: str) -> ModuleType:
+    """
+    Loads the agents module for the given exercise name.
+
+    Args:
+        exercise_name: The name of the exercise to load.
+
+    Returns:
+        The loaded agents module.
+    """
+    module_name = EXERCISE_TO_MODULE_IMPORT[exercise_name]
+
+    if module_name:
+        mlflow.set_experiment(exercise_name)
+        return importlib.import_module(module_name)
+
+    raise ImportError(f"Module for {exercise_name} not found")
+
 
 
 async def get_agent_response(user_message: str) -> str:
@@ -42,11 +56,11 @@ async def get_agent_response(user_message: str) -> str:
     # Retrieve the history from the user session and add the user message to it
     history = cl.user_session.get("history") or []
 
-    # Retrieve the execute agent function from the user session
-    execute_agent = cl.user_session.get("execute_agent", EXERCISE_TO_EXECUTE_AGENT["Exercise 1"])
+    # Retrieve the exercise's agents module from the user session
+    exercise = cl.user_session.get("exercise", await load_exercise_agents_module("Exercise 1"))
 
     # Execute agent with input and handle exceptions in the service layer
-    response, updated_history = await execute_agent(user_input=user_message, history=history)
+    response, updated_history = await exercise.execute_agent(user_input=user_message, history=history)
 
     # Only update history if we got a valid updated history back
     if updated_history is not None:
@@ -92,7 +106,8 @@ async def on_chat_start():
 @cl.on_settings_update
 async def on_settings_update(settings):
     # Update the agent execution function based on the selected exercise
-    cl.user_session.set("execute_agent", EXERCISE_TO_EXECUTE_AGENT[settings["exercise"]])
+    cl.user_session.set("exercise_name", settings["exercise"])
+    cl.user_session.set("exercise", await load_exercise_agents_module(settings["exercise"]))
 
     # If user selected verbose logging, enable it (can't be disabled until restart)
     if settings["verbose_stdout_logging"]:
@@ -102,42 +117,15 @@ async def on_settings_update(settings):
 @cl.on_message  # this function will be called every time a user inputs a message in the UI
 async def handle_message(message: cl.Message):
     response = await get_agent_response(message.content)
-    await cl.Message(content=response).send()
+    author = cl.user_session.get("exercise_name")
+    await cl.Message(content=response, author=author).send()
 
 
 @cl.server.app.on_event("shutdown")
 async def on_shutdown():
     # Get the current selected exercise from the user session
-    current_exercise = cl.user_session.get("execute_agent", None)
+    current_exercise = cl.user_session.get("exercise", None)
 
-    # Variable to hold the correct repository class
-    repo_class = None
-
-    # Determine the repository class based on the selected exercise
-    if current_exercise == execute_agent_ex02:
-        from exercise02.my_tools import McpServerRepository
-
-        repo_class = McpServerRepository
-    elif current_exercise == execute_agent_ex03:
-        from exercise03.my_agents import McpServerRepository
-
-        repo_class = McpServerRepository
-    elif current_exercise == execute_agent_ex04:
-        from exercise04.my_agents import McpServerRepository
-
-        repo_class = McpServerRepository
-    elif current_exercise == execute_agent_ex02_solution:
-        from solution_exercise02.my_agents import McpServerRepository
-
-        repo_class = McpServerRepository
-    elif current_exercise == execute_agent_ex03_solution:
-        from solution_exercise03.my_agents import McpServerRepository
-
-        repo_class = McpServerRepository
-    elif current_exercise == execute_agent_ex04_solution:
-        from solution_exercise04.my_agents import McpServerRepository
-
-        repo_class = McpServerRepository
-
-    repo = await repo_class.get_instance()
-    await repo.aclose()
+    if current_exercise and hasattr(current_exercise, "MCPServerRepository"):
+        repo = await current_exercise.MCPServerRepository.get_instance()
+        await repo.aclose()

@@ -3,7 +3,6 @@ from datetime import datetime
 from textwrap import dedent
 from typing import Any
 
-import mlflow
 from agents import (
     Agent,
     GuardrailFunctionOutput,
@@ -229,7 +228,6 @@ async def execute_agent(user_input: str, history: list[dict[str, str]]) -> tuple
         If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
-    mlflow.set_experiment("Exercise 4 - Solution")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()

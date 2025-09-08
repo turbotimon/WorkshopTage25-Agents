@@ -169,7 +169,6 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
-    mlflow.set_experiment("Exercise 3")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()

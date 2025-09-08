@@ -2,7 +2,6 @@ from datetime import datetime
 from textwrap import dedent
 from typing import Any, Dict, List
 
-import mlflow
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
 from pydantic import BaseModel
 
@@ -111,7 +110,6 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         A tuple containing (response_message, updated_history)
         the history should not be updated
     """
-    mlflow.set_experiment("Exercise 2")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()
