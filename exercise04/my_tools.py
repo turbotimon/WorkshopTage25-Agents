@@ -101,7 +101,7 @@ def think(thoughts: str) -> str:
     return f"Thoughts: {thoughts}"
 
 
-async def ask_user(question: str, timeout=30) -> str:
+async def ask_user(question: str, timeout=120) -> str:
     """
     Ask the user for clarification on a specific question.
     """
