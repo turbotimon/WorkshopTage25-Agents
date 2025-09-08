@@ -3,15 +3,15 @@ name = "aia25"
 version = "0.1.0"
 description = "Repository for the Open Source AI Workshop - AI Agents in Action: Building Smart, Open-Source LLM Workflows - May 9, 2025"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-    "chainlit>=2.5.5",
+    "chainlit>=2.7.2",
     "ics>=0.7.2",
-    "nest-asyncio>=1.6.0",
-    "openai-agents[litellm]>=0.0.13",
-    "pydantic-ai[logfire]>=0.1.8",
+    "mlflow>=3.3.2",
+    "openai>=1.106.1",
+    "openai-agents>=0.2.11",
     "python-dateutil>=2.9.0.post0",
-    "python-dotenv>=1.1.0",
+    "python-dotenv>=1.1.1",
     "pytz>=2025.2",
 ]
 
@@ -19,11 +19,7 @@ dependencies = [
 packages = ["aia25"]
 
 [dependency-groups]
-dev = [
-    "black>=25.1.0",
-    "ipdb>=0.13.13",
-    "ptpython>=3.0.30",
-]
+dev = []
 
 [project.scripts]
 app = "aia25.cli:main"

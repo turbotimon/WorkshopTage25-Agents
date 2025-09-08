@@ -1,19 +1,15 @@
 import asyncio
 import time
-import os
+
 from agents import Agent, Runner
-from agents.mcp import MCPServerStdio, MCPServer
-from agents.extensions.models.litellm_model import LitellmModel
+from agents.mcp import MCPServer, MCPServerStdio
 
 
 async def run_agent(mcp_server: MCPServer):
     agent = Agent(
         name="Assistant",
         instructions="Use the tools navigate the webbrowser.",
-        mcp_servers=[mcp_server],
-        model=LitellmModel(
-            model="openrouter/meta-llama/llama-3.3-70b-instruct", api_key=os.getenv("OPENROUTER_API_KEY")
-        ),
+        mcp_servers=[mcp_server]
     )
 
     result = await Runner.run(

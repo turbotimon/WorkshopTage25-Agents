@@ -1,11 +1,12 @@
-import os
 from datetime import datetime
 from textwrap import dedent
 from typing import Any, Dict, List
+
+import mlflow
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
-from agents.extensions.models.litellm_model import LitellmModel
 from pydantic import BaseModel
-from .my_tools import get_connections, think, ask_for_clarification
+
+from .my_tools import ask_for_clarification, get_connections, think
 
 
 class GlobalContext(BaseModel):
@@ -82,7 +83,6 @@ public_transport_agent = Agent(
     name="Public Transport Agent",
     instructions=public_transport_agent_system_prompt,
     tools=[think, ask_for_clarification, get_connections],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -111,6 +111,7 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         A tuple containing (response_message, updated_history)
         the history should not be updated
     """
+    mlflow.set_experiment("Exercise 2")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()

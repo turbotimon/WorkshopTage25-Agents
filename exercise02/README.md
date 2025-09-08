@@ -83,13 +83,12 @@ public_transport_agent.as_tool(
 
 ```python
 from .prompts import triage_agent_system_prompt
-from openai_agents import Agent, LitellmModel
+from openai_agents import Agent
 
 triage_agent = Agent(
     name='Triage Agent',
     instructions=...,
-    tools=[...],
-    model=LitellmModel(),
+    tools=[...]
 )
 ```
 

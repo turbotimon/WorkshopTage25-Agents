@@ -1,8 +1,9 @@
 import asyncio
 from datetime import datetime
-import os
 from textwrap import dedent
 from typing import Any
+
+import mlflow
 from agents import (
     Agent,
     GuardrailFunctionOutput,
@@ -12,9 +13,15 @@ from agents import (
     TResponseInputItem,
     input_guardrail,
 )
-from agents.extensions.models.litellm_model import LitellmModel
 from pydantic import BaseModel
-from .my_tools import MCPServerRepository, get_connections, think, ask_for_clarification, get_calendar_appointments
+
+from .my_tools import (
+    MCPServerRepository,
+    ask_for_clarification,
+    get_calendar_appointments,
+    get_connections,
+    think,
+)
 
 
 class GlobalContext(BaseModel):
@@ -53,8 +60,7 @@ def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], ag
 scheduling_agent = Agent(
     name="Scheduling Agent",
     instructions=scheduling_agent_system_prompt,
-    tools=[think, ask_for_clarification, get_calendar_appointments],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    tools=[think, ask_for_clarification, get_calendar_appointments]
 )
 
 
@@ -94,8 +100,7 @@ def public_transport_agent_system_prompt(
 public_transport_agent = Agent(
     name="Public Transport Agent",
     instructions=public_transport_agent_system_prompt,
-    tools=[think, ask_for_clarification, get_connections],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    tools=[think, ask_for_clarification, get_connections]
 )
 
 
@@ -111,8 +116,7 @@ class OpenStreetMapAgent(Agent):
                 "to answer questions about route directions, nearby places, points of interest, etc."
             ),
             tools=[think, ask_for_clarification],
-            mcp_servers=[mcp_repo.get_server("openstreetmap")],
-            model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+            mcp_servers=[mcp_repo.get_server("openstreetmap")]
         )
 
 
@@ -143,8 +147,7 @@ IMPORTANT: Always respond with valid JSON format that can be parsed. Do not incl
 guardrail_agent = Agent(
     name="Topic Check Guardrail",
     instructions=guardrail_agent_system_prompt,
-    output_type=TopicCheckOutput,
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    output_type=TopicCheckOutput
 )
 
 
@@ -209,7 +212,6 @@ triage_agent = Agent(
             ),
         ),
     ],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
     input_guardrails=[topic_guardrail],
 )
 
@@ -227,6 +229,7 @@ async def execute_agent(user_input: str, history: list[dict[str, str]]) -> tuple
         If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
+    mlflow.set_experiment("Exercise 4 - Solution")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()
