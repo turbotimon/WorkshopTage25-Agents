@@ -1,22 +1,20 @@
-from __future__ import annotations
-import os, base64, nest_asyncio, logfire, dotenv
-from pathlib import Path
+import logging
+from os import getenv
 
-# Load environment variables from .env file
-dotenv.load_dotenv(Path(__file__).parent.parent / ".env", override=True)
+import mlflow
+from agents import set_default_openai_api, set_default_openai_client
+from openai import AsyncOpenAI
 
-if os.getenv("LANGFUSE_TRACING_ACTIVE", "false") == "true":
-    # Configure tracing with Langfuse
-    pub, sec = os.getenv("LANGFUSE_PUBLIC_KEY"), os.getenv("LANGFUSE_SECRET_KEY")
-    if pub and sec:
-        auth = base64.b64encode(f"{pub}:{sec}".encode()).decode()
-        os.environ.setdefault(
-            "OTEL_EXPORTER_OTLP_ENDPOINT",
-            f"{os.getenv('LANGFUSE_HOST','')}/api/public/otel",
-        )
-        os.environ.setdefault("OTEL_EXPORTER_OTLP_HEADERS", f"Authorization=Basic {auth}")
+logging.getLogger("openai.agents").setLevel(logging.CRITICAL)
 
-    nest_asyncio.apply()
+custom_client = AsyncOpenAI(
+    api_key=getenv("OPENROUTER_API_KEY"), base_url=getenv("BASE_URL")
+)
+set_default_openai_client(custom_client)
+set_default_openai_api("chat_completions")
 
-    logfire.configure(service_name="AIA25", send_to_logfire=False)
-    logfire.instrument_openai_agents()
+# Enable auto tracing for OpenAI Agents SDK
+mlflow.openai.autolog()
+
+# Optional: Set a tracking URI and an experiment
+mlflow.set_tracking_uri("http://localhost:5000")

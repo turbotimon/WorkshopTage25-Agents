@@ -48,6 +48,15 @@ You have two options for running the application:
     ```
     This will start the user interface.
 
+## Tracing
+You can have a look at the flow of execution, by inspecting the traces. Traces are separated by experiment, and each time you start a specific exercise, a new trace is generated.
+We are using MLFlow for tracing, to launch the dashboard, just enter the following command in your CLI (ensure your virtual environment is activated):
+```bash
+ mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
+ ```
+ This starts the MLFlow server on port 5000.
+ To inspect your server just go to: http://localhost:5000/
+
 ## Repository Structure
 
 The repository is organized into the following directories:

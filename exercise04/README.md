@@ -60,7 +60,6 @@ guardrail_agent = Agent(
     name="Topic Check Guardrail",
     instructions=...,  # ✅ use the prompt already provided above
     output_type=...,   # ✅ your structured schema
-    model=LitellmModel(...),
 )
 ```
 

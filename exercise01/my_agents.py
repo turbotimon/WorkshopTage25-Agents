@@ -1,12 +1,15 @@
-import os
-from typing import Any, Dict, List
-from agents import Agent, Runner, TResponseInputItem
-from agents.extensions.models.litellm_model import LitellmModel
-
 from textwrap import dedent
+from typing import Any, Dict, List
 
-from .my_tools import ask_for_clarification, get_connections, get_current_date_and_time, think
+import mlflow
+from agents import Agent, Runner, TResponseInputItem
 
+from .my_tools import (
+    ask_for_clarification,
+    get_connections,
+    get_current_date_and_time,
+    think,
+)
 
 public_transport_agent = Agent(
     name="Public Transport Agent",
@@ -35,8 +38,7 @@ public_transport_agent = Agent(
         Whenever you plan something, immediately follow up with the plan before answering the question.
         """
     ),
-    tools=[think, ask_for_clarification, get_connections, get_current_date_and_time],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    tools=[think, ask_for_clarification, get_connections, get_current_date_and_time]
 )
 
 
@@ -52,6 +54,7 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         A tuple containing (response_message, updated_history)
         the history should not be updated
     """
+    mlflow.set_experiment("Exercise 1")
     current_history = history + [{"role": "user", "content": user_input}]
 
     result = await Runner.run(starting_agent=public_transport_agent, input=current_history)

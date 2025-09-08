@@ -36,7 +36,6 @@ location-based questions (nearby places, route directions, etc.).
     * `instructions` – one or two sentences describing its domain.
     * `tools` - the agent should still be able to think and ask for clarifications
     * `mcp_servers` - the retrieved MCPS server
-    * `model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY"))`
 
 ### 3.2 Register the tool in **`triage_agent`**
 

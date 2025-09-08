@@ -1,11 +1,16 @@
-import os
 from datetime import datetime
 from textwrap import dedent
 from typing import Any, Dict, List
+
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
-from agents.extensions.models.litellm_model import LitellmModel
 from pydantic import BaseModel
-from .my_tools import MCPServerRepository, get_connections, think, ask_for_clarification, get_calendar_appointments
+
+from .my_tools import (
+    ask_for_clarification,
+    get_calendar_appointments,
+    get_connections,
+    think,
+)
 
 
 class GlobalContext(BaseModel):
@@ -45,7 +50,6 @@ scheduling_agent = Agent(
     name="Scheduling Agent",
     instructions=scheduling_agent_system_prompt,
     tools=[think, ask_for_clarification, get_calendar_appointments],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -86,7 +90,6 @@ public_transport_agent = Agent(
     name="Public Transport Agent",
     instructions=public_transport_agent_system_prompt,
     tools=[think, ask_for_clarification, get_connections],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
 )
 
 
@@ -101,7 +104,6 @@ class OpenStreetMapAgent(Agent):
                 • A clear instruction string.
                 • `tools` list containing at least `think` and `ask_for_clarification`.
                 • `mcp_servers=[the_openstreetmap_server]`.
-                • A `LitellmModel` instance (same env vars as above).
 
         Hints:
             • `MCPServerRepository.get_instance()` is an async classmethod.
@@ -150,8 +152,7 @@ triage_agent = Agent(
         #       tool_name="...",
         #       tool_description="...",
         #   ),
-    ],
-    model=LitellmModel(model=os.getenv("AGENT_MODEL"), api_key=os.getenv("OPENROUTER_API_KEY")),
+    ]
 )
 
 
@@ -168,6 +169,7 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
+    mlflow.set_experiment("Exercise 3")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()
