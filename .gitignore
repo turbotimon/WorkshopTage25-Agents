@@ -5,3 +5,4 @@ __pycache__/
 aia25.egg-info/
 mlflow.db
 mlartifacts
+mlruns
