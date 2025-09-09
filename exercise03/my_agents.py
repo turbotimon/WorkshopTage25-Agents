@@ -98,17 +98,17 @@ class OpenStreetMapAgent(Agent):
     async def setup(cls):
         """
         TODO:
-            1. Obtain the global `MCPServerRepository` singleton.
+            1. Obtain the global `MCPServerRepository` singleton (`get_instance`) from the `my_tools` module.
             2. Retrieve the server named **"openstreetmap"**.
             3. Instantiate **OpenStreetMapAgent** with:
                 • A clear instruction string.
                 • `tools` list containing at least `think` and `ask_for_clarification`.
-                • `mcp_servers=[the_openstreetmap_server]`.
+                • `mcp_servers=[the_openstreetmap_server_you_retrieved]`.
 
         Hints:
-            • `MCPServerRepository.get_instance()` is an async classmethod.
-            • The agent constructor is `Agent.__init__(name, instructions, tools, mcp_servers, model)`.
-            • Keep the method `@classmethod` and return `cls(...)`.
+            • `MCPServerRepository.get_instance()` is an async classmethod, so you need to await it.
+            • The agent constructor is `Agent(name, instructions, tools, mcp_servers, model)`.
+            • Keep the method `@classmethod` and return `cls(...)`, this will create an instance of the agent.
         """
         # === Your code here ================================================= #
         pass
@@ -124,7 +124,11 @@ of geographical location data such as nearby places, route directions, etc.
 2. Then, check the user's calendar appointments for the travel date.
 3. If appropriate, take into account contextual information to improve the trip planning.
 
-When referring to an appointment, always mention the name of the appointment.
+When referring to an appointment, always mention the name of the appointment. Do not recall
+points of interests (such as nearby places) or other geographical information on your own, 
+ALWAYS use the explore_locations tool to ensure up-to-date information. You do not have access
+to any other location services.
+
 Answer in a friendly and helpful manner.
 """
 
@@ -146,7 +150,7 @@ triage_agent = Agent(
             ),
         ),
         # TODO:
-        #   After you finish OpenStreetMapAgent.setup(), add it below like so:
+        #   After you finish implementing OpenStreetMapAgent.setup(), add it below like so:
         #
         #   asyncio.run(OpenStreetMapAgent.setup()).as_tool(
         #       tool_name="...",
@@ -169,7 +173,6 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         If the guardrail was triggered, updated_history will be None indicating
         the history should not be updated
     """
-    mlflow.set_experiment("Exercise 3")
     current_history = history + [{"role": "user", "content": user_input}]
 
     current_datetime = datetime.now()

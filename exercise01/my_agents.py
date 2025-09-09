@@ -1,7 +1,6 @@
 from textwrap import dedent
 from typing import Any, Dict, List
 
-import mlflow
 from agents import Agent, Runner, TResponseInputItem
 
 from .my_tools import (
@@ -54,7 +53,6 @@ async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple
         A tuple containing (response_message, updated_history)
         the history should not be updated
     """
-    mlflow.set_experiment("Exercise 1")
     current_history = history + [{"role": "user", "content": user_input}]
 
     result = await Runner.run(starting_agent=public_transport_agent, input=current_history)

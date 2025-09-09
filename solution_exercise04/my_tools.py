@@ -7,6 +7,7 @@ import requests
 from agents import function_tool
 from .calendar_client import ICSClient
 import chainlit as cl
+from agents.mcp import MCPServerStdio, create_static_tool_filter
 import asyncio
 
 
@@ -101,7 +102,7 @@ def think(thoughts: str) -> str:
     return f"Thoughts: {thoughts}"
 
 
-async def ask_user(question: str, timeout=30) -> str:
+async def ask_user(question: str, timeout=120) -> str:
     """
     Ask the user for clarification on a specific question.
     """
@@ -202,19 +203,27 @@ class MCPServerRepository:
 
     async def _setup(self):
         servers = {
-            # "openstreetmap": MCPServerStdio(
-            #     cache_tools_list=True,
-            #     params={
-            #         "command": "uvx",
-            #         "args": [
-            #             "--from",
-            #             "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
-            #             "osm-mcp-server",
-            #         ],
-            #     },
-            #     # Increase timeout to avoid MCP server initialization errors
-            #     client_session_timeout_seconds=10,
-            # ),
+            "openstreetmap": MCPServerStdio(
+                cache_tools_list=True,
+                tool_filter=create_static_tool_filter(allowed_tool_names=[
+                    "geocode_address",
+                    "reverse_geocode",
+                    "explore_area",
+                    "get_route_directions",
+                    "suggest_meeting_point"
+
+                ]),
+                params={
+                    "command": "uvx",
+                    "args": [
+                        "--from",
+                        "git+https://github.com/jagan-shanmugam/open-streetmap-mcp.git",
+                        "osm-mcp-server",
+                    ],
+                },
+                # Increase timeout to avoid MCP server initialization errors
+                client_session_timeout_seconds=20,
+            ),
         }
 
         # Enter async context for each server
