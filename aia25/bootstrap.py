@@ -1,4 +1,5 @@
 import os
+
 os.environ.setdefault("OPENAI_AGENTS_DISABLE_TRACING", "1")  # Disable default OpenAI tracing
 
 import logging
@@ -24,7 +25,7 @@ set_default_openai_api("chat_completions")
 
 # Activate MLFlow tracing if MLFlow is available
 logger = logging.getLogger("chainlit")
-mlflow_port = os.getenv("MLFLOW_PORT", 5000)
+mlflow_port = os.getenv("MLFLOW_PORT", "5000")
 
 try:
     response = requests.get(f"http://localhost:{mlflow_port}/health", timeout=2)
