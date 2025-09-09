@@ -1,14 +1,11 @@
-import importlib
 from aia25.bootstrap import *  # noqa: F403,E402
-import sys
-from pathlib import Path
+
+import importlib
 from types import ModuleType
 
 import mlflow
 import chainlit as cl
 from agents import enable_verbose_stdout_logging
-
-sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 
 EXERCISE_TO_MODULE_IMPORT = {
@@ -35,11 +32,22 @@ async def load_exercise_agents_module(exercise_name: str) -> ModuleType:
     module_name = EXERCISE_TO_MODULE_IMPORT[exercise_name]
 
     if module_name:
-        mlflow.set_experiment(exercise_name)
+        if mlflow_tracing_enabled():
+            mlflow.set_experiment(exercise_name)
+            
         return importlib.import_module(module_name)
 
     raise ImportError(f"Module for {exercise_name} not found")
 
+
+def mlflow_tracing_enabled() -> bool:
+    """
+    Check if MLFlow tracing is enabled.
+
+    Returns:
+        True if MLFlow tracing is enabled, False otherwise.
+    """
+    return bool(os.getenv("MLFLOW_TRACING_ENABLED", "False"))
 
 
 async def get_agent_response(user_message: str) -> str:
