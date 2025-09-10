@@ -29,6 +29,7 @@
         "PYTHONPATH": "${workspaceFolder}${pathSeparator}${workspaceFolder}/aia25${pathSeparator}${workspaceFolder}/tools_repo"
       }
     },
+    // ERTI "Chat UI - Langfuse" is outdated
     {
       "name": "Chat UI - Langfuse",
       "type": "debugpy",
