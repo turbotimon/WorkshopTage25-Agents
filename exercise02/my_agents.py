@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
 from pydantic import BaseModel
 
-from .my_tools import ask_for_clarification, get_connections, think
+from .my_tools import ask_for_clarification, get_connections, think, get_calendar_appointments
 
 
 class GlobalContext(BaseModel):
@@ -42,7 +42,11 @@ def scheduling_agent_system_prompt(context: RunContextWrapper[GlobalContext], ag
 
 
 # TODO: Implement the scheduling_agent with the provided system prompt and tools
-scheduling_agent = None
+scheduling_agent = Agent(
+    name="Public Transport Agent",
+    instructions=scheduling_agent_system_prompt,
+    tools=[think, ask_for_clarification, get_connections],
+)
 
 
 def public_transport_agent_system_prompt(
@@ -78,10 +82,15 @@ def public_transport_agent_system_prompt(
     )
 
 
-public_transport_agent = Agent(
+public_transport_agent_ = Agent(
     name="Public Transport Agent",
     instructions=public_transport_agent_system_prompt,
     tools=[think, ask_for_clarification, get_connections],
+)
+
+public_transport_agent = public_transport_agent_.as_tool(
+    tool_name="Public Transport Agent",
+    tool_description="A tool to find public transport connections.",
 )
 
 
@@ -95,7 +104,11 @@ Answer in a friendly and helpful manner.
 """
 
 # TODO: Implement the triage_agent with the provided system prompt and tool wrappers
-triage_agent = None
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions=triage_agent_system_prompt,
+    tools=[public_transport_agent, get_calendar_appointments],
+)
 
 
 async def execute_agent(user_input: str, history: List[Dict[str, str]]) -> tuple[Any, list[TResponseInputItem]]:

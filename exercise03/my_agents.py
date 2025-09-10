@@ -5,11 +5,14 @@ from typing import Any, Dict, List
 from agents import Agent, RunContextWrapper, Runner, TResponseInputItem
 from pydantic import BaseModel
 
+import asyncio
+
 from .my_tools import (
     ask_for_clarification,
     get_calendar_appointments,
     get_connections,
     think,
+    MCPServerRepository,
 )
 
 
@@ -111,7 +114,14 @@ class OpenStreetMapAgent(Agent):
             • Keep the method `@classmethod` and return `cls(...)`, this will create an instance of the agent.
         """
         # === Your code here ================================================= #
-        pass
+        instance = await MCPServerRepository.get_instance()
+        openstreetmap_server = instance.get_server("openstreetmap")
+        return cls(
+            name="OpenStreetMap Agent",
+            instructions="You are an agent that provides information about OpenStreetMap.",
+            tools=[think, ask_for_clarification],
+            mcp_servers=[openstreetmap_server]
+        )
         # ==================================================================== #
 
 
@@ -149,13 +159,18 @@ triage_agent = Agent(
                 "then determine the connection that best fits with the user's calendar appointments"
             ),
         ),
-        # TODO:
+        # DONE:
         #   After you finish implementing OpenStreetMapAgent.setup(), add it below like so:
         #
         #   asyncio.run(OpenStreetMapAgent.setup()).as_tool(
         #       tool_name="...",
         #       tool_description="...",
         #   ),
+        asyncio.run(OpenStreetMapAgent.setup()).as_tool(
+            tool_name="get_nearby_places",
+            tool_description="Get a list of nearby places from OpenStreetMap."
+        ),
+
     ]
 )
 
