@@ -147,10 +147,10 @@ triage_agent = Agent(
         ),
         asyncio.run(OpenStreetMapAgent.setup()).as_tool(
             tool_name="explore_locations",
-            tool_description=dedent(
-                """Find information about locations. Can be used to geocode addresses, find nearby places,
-                get walking directions from point A to B, and suggest meeting spots for two people in 
-                different locations."""
+            tool_description=(
+                "Find information about locations. Can be used to geocode addresses, find nearby places, "
+                "get walking directions from point A to B, and suggest meeting spots for two people in "
+                "different locations."
             ),
         ),
     ]
