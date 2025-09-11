@@ -142,23 +142,6 @@ IMPORTANT: Always respond with valid JSON format that can be parsed. Do not incl
 """
 
 
-guardrail_agent = Agent(
-    name="Topic Check Guardrail",
-    instructions=None,  # TODO: Add the instructions for the guardrail agent,
-    output_type=None  # TODO: Define the output type for the guardrail agent,
-)
-
-
-@input_guardrail
-async def topic_guardrail(
-    ctx: RunContextWrapper[None],
-    agent: Agent,
-    input: str | list[TResponseInputItem],
-) -> GuardrailFunctionOutput:
-    # TODO: Implement the guardrail logic to check if the input is relevant to the topics
-    pass
-
-
 triage_agent_system_prompt = """
 You are a smart assistant that helps users plan their trips based on public transport
 schedules, their calendar appointments, and other relevant information. You can make use
@@ -175,6 +158,33 @@ to any other location services.
 
 Answer in a friendly and helpful manner.
 """
+
+# DONE
+guardrail_agent = Agent(
+    name="Topic Check Guardrail",
+    instructions=guardrail_agent_system_prompt,
+    output_type=TopicCheckOutput
+)
+
+
+@input_guardrail
+async def topic_guardrail(
+    ctx: RunContextWrapper[None],
+    agent: Agent,
+    input: str | list[TResponseInputItem],
+) -> GuardrailFunctionOutput:
+    # DONE: Implement the guardrail logic to check if the input is relevant to the topics
+    output_raw = await Runner.run(
+        starting_agent=guardrail_agent,
+        input=input,
+        context=ctx
+    )
+    # is_triggered = output_raw.final_output_as(GuardrailFunctionOutput).is_relevant
+    is_triggered: bool = output_raw.final_output.is_relevant
+
+    return GuardrailFunctionOutput(**output_raw)
+
+
 
 triage_agent = Agent(
     name="Triage agent",
